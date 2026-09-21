@@ -1,4 +1,4 @@
-name: Generate GitHub Trophy
+name: Update GitHub Trophy
 
 on:
   workflow_dispatch:
@@ -13,24 +13,23 @@ jobs:
       contents: write
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Generate trophy
         uses: Erik-Donath/github-profile-trophy@feature/generate-svg
         with:
           username: gAurav-0x07
-          output_path: trophy.svg
+          output_path: trophy-output/trophy.svg
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push trophy
+      - name: Commit trophy
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git clone https://github.com/gAurav-0x07/gAurav-0x07.git repo
-          cd repo
-
-          mkdir -p trophy-output
-          cp ../trophy.svg trophy-output/trophy.svg
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add trophy-output/trophy.svg
-          git commit -m "Update GitHub trophy" || exit 0
+
+          git diff --cached --quiet || git commit -m "Update GitHub trophy"
+
           git push
